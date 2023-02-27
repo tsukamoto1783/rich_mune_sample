@@ -25,6 +25,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final dio = Dio();
+  Response<dynamic>? res1;
+  Response<dynamic>? res2;
 
   @override
   Widget build(BuildContext context) {
@@ -37,23 +39,51 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'Api call test',
+              'API call test',
             ),
             ElevatedButton(
-              child: const Text("Call API"),
+              child: const Text("Call API ①"),
               onPressed: () async {
-                final response = await dio.get('https://httpbin.org/get');
-                print(response);
+                final response1 = await dio.get(
+                    'https://b212sdavwi.execute-api.us-east-1.amazonaws.com/default/sample');
+                print(response1);
                 print("=================");
-                print(response.data);
+                print(response1.data);
                 print("=================");
-                print(response.headers);
+                print(response1.headers);
                 print("=================");
-                print(response.requestOptions);
+                print(response1.requestOptions);
                 print("=================");
-                print(response.statusCode);
+                print(response1.statusCode);
+                setState(() {
+                  res1 = response1;
+                });
               },
-            )
+            ),
+            Text("【↓response↓】\n $res1"),
+            Container(
+              margin: const EdgeInsets.only(top: 30),
+            ),
+            ElevatedButton(
+              child: const Text("Call API ②"),
+              onPressed: () async {
+                final response2 = await dio.get(
+                    'https://0jpvds5on1.execute-api.us-east-1.amazonaws.com/default/ricu_munu_sample');
+                print(response2);
+                print("=================");
+                print(response2.data);
+                print("=================");
+                print(response2.headers);
+                print("=================");
+                print(response2.requestOptions);
+                print("=================");
+                print(response2.statusCode);
+                setState(() {
+                  res2 = response2;
+                });
+              },
+            ),
+            Text("【↓response↓】\n $res2"),
           ],
         ),
       ),
