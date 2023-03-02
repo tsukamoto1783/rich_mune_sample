@@ -24,8 +24,15 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final String apiGatewayEndpoint =
+      "https://0jpvds5on1.execute-api.us-east-1.amazonaws.com/default/ricu_munu_sample";
   final dio = Dio();
+  bool isVisible1 = false;
+  bool isError1 = false;
   Response<dynamic>? res1;
+
+  bool isVisible2 = false;
+  bool isError2 = false;
   Response<dynamic>? res2;
 
   @override
@@ -44,46 +51,80 @@ class _MyHomePageState extends State<MyHomePage> {
             ElevatedButton(
               child: const Text("Call API ①"),
               onPressed: () async {
-                final response1 = await dio.get(
-                    'https://b212sdavwi.execute-api.us-east-1.amazonaws.com/default/sample');
-                print(response1);
-                print("=================");
-                print(response1.data);
-                print("=================");
-                print(response1.headers);
-                print("=================");
-                print(response1.requestOptions);
-                print("=================");
-                print(response1.statusCode);
                 setState(() {
+                  isVisible1 = false;
+                  isVisible2 = false;
+                });
+                try {
+                  final response1 =
+                      await dio.get('$apiGatewayEndpoint?is_swithc=true');
                   res1 = response1;
+                } catch (e) {
+                  isError1 = true;
+                  print(e);
+                }
+
+                setState(() {
+                  isVisible1 = true;
                 });
               },
             ),
-            Text("【↓response↓】\n $res1"),
+            Visibility(
+              visible: isVisible1,
+              child: Column(
+                children: [
+                  const Text("【↓response↓】"),
+                  Visibility(
+                    visible: !isError1,
+                    child: Text("$res1"),
+                  ),
+                  Visibility(
+                    visible: isError1,
+                    child: const Text("API呼び出しに失敗しました"),
+                  ),
+                ],
+              ),
+            ),
             Container(
               margin: const EdgeInsets.only(top: 30),
             ),
             ElevatedButton(
               child: const Text("Call API ②"),
               onPressed: () async {
-                final response2 = await dio.get(
-                    'https://0jpvds5on1.execute-api.us-east-1.amazonaws.com/default/ricu_munu_sample');
-                print(response2);
-                print("=================");
-                print(response2.data);
-                print("=================");
-                print(response2.headers);
-                print("=================");
-                print(response2.requestOptions);
-                print("=================");
-                print(response2.statusCode);
                 setState(() {
-                  res2 = response2;
+                  isVisible1 = false;
+                  isVisible2 = false;
+                });
+                try {
+                  final response1 =
+                      await dio.get('$apiGatewayEndpoint?is_swithc=false');
+                  res2 = response1;
+                } catch (e) {
+                  isError2 = true;
+                  print(e);
+                }
+
+                setState(() {
+                  isVisible2 = true;
                 });
               },
             ),
-            Text("【↓response↓】\n $res2"),
+            Visibility(
+              visible: isVisible2,
+              child: Column(
+                children: [
+                  const Text("【↓response↓】"),
+                  Visibility(
+                    visible: !isError2,
+                    child: Text("$res2"),
+                  ),
+                  Visibility(
+                    visible: isError2,
+                    child: const Text("API呼び出しに失敗しました"),
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
