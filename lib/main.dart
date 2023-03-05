@@ -1,7 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: ".env");
   runApp(const MyApp());
 }
 
@@ -24,8 +26,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final String apiGatewayEndpoint =
-      "https://0jpvds5on1.execute-api.us-east-1.amazonaws.com/default/ricu_munu_sample";
+  // APIGatewayのエンドポイントは.envで管理
+  final String? apiGatewayEndpoint = dotenv.env['API_GATEWAY_ENDPOINT'];
   final dio = Dio();
   bool isVisible1 = false;
   bool isError1 = false;

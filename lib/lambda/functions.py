@@ -96,20 +96,19 @@ def upload_rich_menu_image(rich_menu_id: str, is_bool: bool):
 # S3から画像データを取得
 def get_img_from_s3(is_bool: bool):
     get_obj_response_date = None
-    BUCKET_NAME = {S3バケット名}
     object_name = ''
 
     # 引数のbool値で取得する画像データを切り替え
     if is_bool:
-        object_name = {S3に格納している画像名}
+        object_name = const.RICH_MENU_IMAGE1
     else:
-        object_name = {S3に格納している画像名}
+        object_name = const.RICH_MENU_IMAGE2
 
     s3 = boto3.client('s3')
 
     # S3から画像データ取得
     try:
-        obj = s3.get_object(Bucket=BUCKET_NAME, Key=object_name)
+        obj = s3.get_object(Bucket=const.BUCKET_NAME, Key=object_name)
         body = obj['Body'].read()
         return body
     except:
