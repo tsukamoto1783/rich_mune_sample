@@ -26,110 +26,73 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  // APIGatewayのエンドポイントは.envで管理
   final String? apiGatewayEndpoint = dotenv.env['API_GATEWAY_ENDPOINT'];
   final dio = Dio();
-  bool isVisible1 = false;
-  bool isError1 = false;
-  Response<dynamic>? res1;
 
-  bool isVisible2 = false;
-  bool isError2 = false;
-  Response<dynamic>? res2;
+  bool isVisible = false;
+  bool isLoading = false;
+  Response<dynamic>? callApiResult;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("rich_menu_sample"),
+        title: const Text("APIGateway call test"),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'API call test',
-            ),
-            ElevatedButton(
-              child: const Text("Call API ①"),
-              onPressed: () async {
-                setState(() {
-                  isVisible1 = false;
-                  isVisible2 = false;
-                });
-                try {
-                  final response1 =
-                      await dio.get('$apiGatewayEndpoint?is_swithc=true');
-                  res1 = response1;
-                } catch (e) {
-                  isError1 = true;
-                  print(e);
-                }
-
-                setState(() {
-                  isVisible1 = true;
-                });
-              },
-            ),
-            Visibility(
-              visible: isVisible1,
-              child: Column(
-                children: [
-                  const Text("【↓response↓】"),
-                  Visibility(
-                    visible: !isError1,
-                    child: Text("$res1"),
-                  ),
-                  Visibility(
-                    visible: isError1,
-                    child: const Text("API呼び出しに失敗しました"),
-                  ),
-                ],
-              ),
-            ),
-            Container(
-              margin: const EdgeInsets.only(top: 30),
-            ),
-            ElevatedButton(
-              child: const Text("Call API ②"),
-              onPressed: () async {
-                setState(() {
-                  isVisible1 = false;
-                  isVisible2 = false;
-                });
-                try {
-                  final response1 =
-                      await dio.get('$apiGatewayEndpoint?is_swithc=false');
-                  res2 = response1;
-                } catch (e) {
-                  isError2 = true;
-                  print(e);
-                }
-
-                setState(() {
-                  isVisible2 = true;
-                });
-              },
-            ),
-            Visibility(
-              visible: isVisible2,
-              child: Column(
-                children: [
-                  const Text("【↓response↓】"),
-                  Visibility(
-                    visible: !isError2,
-                    child: Text("$res2"),
-                  ),
-                  Visibility(
-                    visible: isError2,
-                    child: const Text("API呼び出しに失敗しました"),
-                  ),
-                ],
-              ),
-            ),
+            _buildElevatedButton("Call API ①", true),
+            const SizedBox(height: 30),
+            _buildElevatedButton("Call API ②", false),
+            const SizedBox(height: 30),
+            const Text("↓【APIGateway call result】↓"),
+            const SizedBox(height: 30),
+            _buildResponseDisplay(isVisible, callApiResult),
+            isLoading ? const CircularProgressIndicator() : Container(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildElevatedButton(String buttonText, bool isSwitch) {
+    return ElevatedButton(
+      child: Text(buttonText),
+      onPressed: () async {
+        _callApi(isSwitch);
+      },
+    );
+  }
+
+  Widget _buildResponseDisplay(bool isVisible, Response? callApiResult) {
+    Widget? displayText;
+    if (callApiResult == null) {
+      displayText = const Text("API呼び出しに失敗しました");
+    }
+    return isVisible ? (displayText ?? Text("$callApiResult")) : Container();
+  }
+
+  Future<Response?> _callApi(bool isSwitch) async {
+    // ボタン押下時の初期化処理
+    setState(() {
+      isVisible = false;
+      callApiResult = null;
+      isLoading = true;
+    });
+
+    try {
+      callApiResult = await dio.get('$apiGatewayEndpoint?is_swithc=$isSwitch');
+    } catch (e) {
+      print(e);
+      throw Exception(e);
+    } finally {
+      setState(() {
+        isVisible = true;
+        isLoading = false;
+      });
+    }
+    return callApiResult;
   }
 }
