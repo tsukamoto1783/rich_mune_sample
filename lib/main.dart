@@ -26,6 +26,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  // 変数:apiGatewayEndpointに、API作成時に発行されたエンドポイントを指定。
+  // 以下サンプルでは、flutter_dotenvを使用して環境変数として指定。
   final String? apiGatewayEndpoint = dotenv.env['API_GATEWAY_ENDPOINT'];
   final dio = Dio();
 
